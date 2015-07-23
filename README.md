@@ -1,5 +1,3 @@
-
-Getting_and_Cleaning_Data
 Getting and Cleaning Data Course Project (Coursera)
 
 
@@ -31,11 +29,11 @@ You should create one R script called run_analysis.R that does the following:
 
 This repository contains:
 
-.CodeBook.md: information about raw and tidy data set 
+1.CodeBook.md: information about raw and tidy data set 
 
-.README.md: this file
+2.README.md: this file
 
-.run_analysis.R: R script to transform raw data set in a tidy one
+3.run_analysis.R: R script to transform raw data set in a tidy one
 
 
 The R script run_analysis.R created does the following:
