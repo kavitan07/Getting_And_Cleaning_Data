@@ -6,9 +6,8 @@ unzip(zipfile="./data/Dataset.zip",exdir="./data")
 path_rf <- file.path("./data" , "UCI HAR Dataset")
 files<-list.files(path_rf, recursive=TRUE)
 
-##The function below does the following:
-  ##1.Reads data from targeted files
-  ##2.Reads data from files into the variables
+##1.Reading data from the targeted files
+##2.Reading data from the files into the variables
 
 dataActivityTest  <- read.table(file.path(path_rf, "test" , "Y_test.txt" ),header = FALSE)
 dataActivityTrain <- read.table(file.path(path_rf, "train", "Y_train.txt"),header = FALSE)
@@ -17,37 +16,37 @@ dataSubjectTest  <- read.table(file.path(path_rf, "test" , "subject_test.txt"),h
 dataFeaturesTest  <- read.table(file.path(path_rf, "test" , "X_test.txt" ),header = FALSE)
 dataFeaturesTrain <- read.table(file.path(path_rf, "train", "X_train.txt"),header = FALSE)
 
-##Creating one data set by merging the training and test sets
-  ##1.Concatenating the data tables by rows
+##Creatas ones data set by merging the training and the test sets
+
+##1.Concatenate the data tables by rows
 dataSubject <- rbind(dataSubjectTrain, dataSubjectTest)
 dataActivity<- rbind(dataActivityTrain, dataActivityTest)
 dataFeatures<- rbind(dataFeaturesTrain, dataFeaturesTest)
 
-##2.Setting names to variables
+##2.Variable names are set
 names(dataSubject)<-c("subject")
 names(dataActivity)<- c("activity")
 dataFeaturesNames <- read.table(file.path(path_rf, "features.txt"),head=FALSE)
 names(dataFeatures)<- dataFeaturesNames$V2
 
-##3.Merging columns to get the data frame Data for all data
+##3.Get the data frame Data for all data by merging columns
 dataCombine <- cbind(dataSubject, dataActivity)
 Data <- cbind(dataFeatures, dataCombine)
 
-##Extracting only the measurements on the mean and standard deviation for each measurement
+##Extracts only the measurements on the mean and standard deviation for each measurement
 ##Subset Name of Features by measurements on the mean and standard deviation
 
 subdataFeaturesNames<-dataFeaturesNames$V2[grep("mean\\(\\)|std\\(\\)", dataFeaturesNames$V2)]
 
-##Subset the data frame Data by selected names of Features
+##using selected names of Features to Subset the data frame Data 
 selectedNames<-c(as.character(subdataFeaturesNames), "subject", "activity" )
 Data<-subset(Data,select=selectedNames)
 
 
-##Uses descriptive activity names to name the activities in the data set
-##Read descriptive activity names from "activity_labels.txt"
+##Name the activities in the data set by Using descriptive activity names
+##Read descriptive activity names from 'activity_labels.txt'
 activityLabels <- read.table(file.path(path_rf, "activity_labels.txt"),header = FALSE)
-
-## Using descriptive names and factorizing the variable activity in the dataframe data
+##Use descriptive activity names to factorize Variable activity in the data frame Data 
 Data$activity <- as.character(Data$activity)
 Data$activity[Data$activity == 1] <- "Walking"
 Data$activity[Data$activity == 2] <- "Walking Upstairs"
@@ -58,15 +57,18 @@ Data$activity[Data$activity == 6] <- "Laying"
 Data$activity <- as.factor(Data$activity)
 head(Data$activity,30)
 
-##Labels data sets with descriptive variable names appropriately
-##Using descriptive variable name to label Names of Features
-##replace prefix t with time
+##Labels the data set appropriately with descriptive variable names
+##Label Names of Features using descriptive variable names.
+##Replace prefix t is by time
 ##Replace Acc by Accelerometer
 ##Replace Gyro by Gyroscope
 ##Replace prefix f by frequency
 ##Replace Mag by Magnitude
 ##Replace BodyBody by Body
-
+##Calculates mean and SD are for each subject for each activity for each mean and SD measurements. 
+##Units given are g's for the accelerometer and rad/sec for the gyro and g/sec and rad/sec/sec for the corresponding jerks.
+names(Data)<-gsub("std\\(\\)", "StandardDeviation", names(Data))
+names(Data)<-gsub("mean\\(\\)", "Mean", names(Data))
 names(Data)<-gsub("^t", "time", names(Data))
 names(Data)<-gsub("^f", "frequency", names(Data))
 names(Data)<-gsub("Acc", "Accelerometer", names(Data))
@@ -74,9 +76,7 @@ names(Data)<-gsub("Gyro", "Gyroscope", names(Data))
 names(Data)<-gsub("Mag", "Magnitude", names(Data))
 names(Data)<-gsub("BodyBody", "Body", names(Data))
 
-##Createing independent tidy data set and output to a file
-library(plyr);
-library(dplyr);
+##Creates independent tidy data set and output to a file
 Data2<-aggregate(. ~subject + activity, Data, mean)
 Data2<-Data2[order(Data2$subject,Data2$activity),]
 write.table(Data2, file = "tidydata.txt",row.name=FALSE)
